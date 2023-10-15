@@ -1,0 +1,28 @@
+version: "3.5"
+
+networks:
+  pg:
+    driver: bridge
+
+volumes:
+  postgres:
+
+services:
+  database:
+    image: postgres:latest
+    hostname: database
+    environment:
+      POSTGRES_PASSWORD: dev
+      POSTGRES_USER: dev
+      POSTGRES_DB: pg
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev -d pg"]
+      interval: 5s
+      timeout: 5s
+    ports:
+      - 5432:5432
+
+    volumes:
+      - ./postgresql.conf:/docker-entrypoint-initdb.d/postgresql.conf
+    command: postgres -c config_file=/docker-entrypoint-initdb.d/postgresql.conf
