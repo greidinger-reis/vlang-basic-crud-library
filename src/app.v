@@ -13,12 +13,7 @@ pub mut:
 }
 
 pub fn App.new(db_handle vweb.DatabasePool[pg.DB]) &App {
-	// product_controller := product.ProductController.new(db_handle)
-
 	return &App{
 		db_handle: db_handle
-		// controllers: [
-		// 	vweb.controller('/product', product_controller),
-		// ]
 	}
 }
