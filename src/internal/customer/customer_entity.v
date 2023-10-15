@@ -11,6 +11,6 @@ pub mut:
 	email         string
 	password_hash string [json: 'passwordHash']
 	is_admin      bool   [json: 'isAdmin']
-
-	orders []order.Order [fkey: 'customer_id']
+	// uncomment this line and watch the compiler go boom
+	// orders []order.Order [fkey: 'customer_id']
 }
