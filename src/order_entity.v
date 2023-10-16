@@ -11,7 +11,7 @@ pub mut:
 	id          string    [primary]
 	customer_id string    [json: 'customerId'; references: 'customer(id)']
 	created_at  time.Time [json: 'createdAt']
-	total_price f64       [json: 'totalPrice']
+	total_price f64       [json: 'totalPrice'; sql_type: 'decimal(8,2)']
 
 	order_items []OrderItem [fkey: 'order_id'; json: 'orderItems']
 }
