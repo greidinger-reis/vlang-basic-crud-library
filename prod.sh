@@ -6,6 +6,8 @@ export DB_NAME=pg
 export DB_HOST=localhost
 export DB_USER=dev
 export DB_PASSWORD=dev
+export AUTH_SECRET=some_secret
+export AUTH_EXP_TIME_SECONDS=604800
 
 v -color -prod ./src -o dist/src
 

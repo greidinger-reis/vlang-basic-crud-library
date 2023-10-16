@@ -1,7 +1,6 @@
 module main
 
 import vweb
-import json
 
 struct NewOrderInputDto {
 	book_id  string
@@ -19,9 +18,9 @@ pub fn (mut ctx App) handle_order_create() vweb.Result {
 		return ctx.text('Unauthorized')
 	}
 
-	input := json.decode(NewOrderInputBodyDto, ctx.req.data) or {
+	input := json_decode[NewOrderInputBodyDto](ctx.req.data) or {
 		ctx.set_status(400, 'Bad Request')
-		return ctx.text('Invalid JSON body')
+		return ctx.text('Invalid JSON body (${err.msg()})')
 	}
 
 	mut new_order_items := []NewOrderItemDto{}
@@ -43,12 +42,9 @@ pub fn (mut ctx App) handle_order_create() vweb.Result {
 		order_items: new_order_items
 	}
 
-	eprintln(*customer)
-	eprintln(new_order_dto)
-
 	created := ctx.order_create(new_order_dto) or {
 		ctx.set_status(500, 'Internal Server Error')
-		return ctx.text('Failed to create order (${err})')
+		return ctx.text('Failed to create order (${err.msg()})')
 	}
 
 	ctx.set_status(201, 'created')

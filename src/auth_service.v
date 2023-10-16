@@ -30,6 +30,5 @@ pub fn (mut ctx App) get_current_customer() ?&Customer {
 	token := auth_header.replace('Bearer ', '')
 	decoded := jwt.decode[JwtPayload](token: token, key: auth_secret_key) or { return none }
 	customer := ctx.customer_find_by_id(decoded.sub)
-	eprintln('customer: ${customer}')
 	return customer
 }

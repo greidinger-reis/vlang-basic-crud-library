@@ -7,10 +7,14 @@ pub fn (mut ctx App) book_get_all() ![]Book {
 	return book_list
 }
 
-pub fn (mut ctx App) book_get_by_id(id string) !&Book {
+pub fn (mut ctx App) book_get_by_id(id string) ?&Book {
 	book_list := sql ctx.db {
-		select from Book where id == id limit 1
-	}!
+		select from Book where id == '${id}'
+	} or { []Book{} }
+
+	if book_list.len == 0 {
+		return none
+	}
 
 	b := book_list.first()
 
