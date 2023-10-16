@@ -1,20 +1,23 @@
 module book
 
-import order
 import json
 import rand
 
 [table: 'book']
-[noinit]
 pub struct Book {
 pub mut:
 	id     string [primary]
-	title  string
-	author string
-	price  f64    [sql_type: 'decimal(10,2)']
+	title  string [sql_type: 'varchar(200)']
+	author string [sql_type: 'varchar(100)']
+	price  f64    [sql_type: 'decimal(8,2)']
 	stock  int
+}
 
-	order_items []order.OrderItem [fkey: 'book_id']
+pub struct NewBookDto {
+	title  string [required]
+	author string [required]
+	price  f64    [required]
+	stock  u32    [required]
 }
 
 pub fn Book.new(title string, author string, price f64, stock u32) &Book {
@@ -27,14 +30,7 @@ pub fn Book.new(title string, author string, price f64, stock u32) &Book {
 	}
 }
 
-pub struct BookFromJsonDto {
-	title  string [required]
-	author string [required]
-	price  f64    [required]
-	stock  u32    [required]
-}
-
 pub fn Book.from_json(data string) !&Book {
-	input := json.decode(BookFromJsonDto, data)!
+	input := json.decode(NewBookDto, data)!
 	return Book.new(input.title, input.author, input.price, input.stock)
 }
