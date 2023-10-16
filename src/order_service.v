@@ -11,6 +11,10 @@ pub fn (mut ctx App) order_create(input &NewOrderDto) !&Order {
 		select from Order where id == o.id limit 1
 	}!
 
+	if order_list.len == 0 {
+		return error('Order created not found')
+	}
+
 	order := order_list.first()
 	return &order
 }

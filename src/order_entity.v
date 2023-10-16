@@ -1,17 +1,14 @@
 module main
 
 import time
-import json
-import rand
 
 [table: 'order']
 [noinit]
 pub struct Order {
 pub mut:
-	id          string    [primary]
+	id          string    [default: 'gen_random_uuid()'; primary; sql_type: 'uuid']
 	customer_id string    [json: 'customerId'; references: 'customer(id)']
 	created_at  time.Time [json: 'createdAt']
-	total_price f64       [json: 'totalPrice'; sql_type: 'decimal(8,2)']
 
 	order_items []OrderItem [fkey: 'order_id'; json: 'orderItems']
 }
@@ -20,9 +17,10 @@ pub mut:
 [noinit]
 pub struct OrderItem {
 pub mut:
-	id       string [primary]
+	id       string [default: 'gen_random_uuid()'; primary; sql_type: 'uuid']
 	order_id string [json: 'orderId'; references: 'order(id)']
 	book_id  string [json: 'bookId'; references: 'book(id)']
+	price    f64    [sql_type: 'decimal(8,2)']
 	quantity int
 }
 
@@ -41,25 +39,30 @@ pub mut:
 
 pub fn Order.new(data &NewOrderDto) &Order {
 	mut order_items := []OrderItem{}
-	mut total_price := 0.0
 
 	for item in data.order_items {
 		o_item := OrderItem{
-			id: rand.uuid_v4()
 			book_id: item.book_id
 			quantity: item.quantity
 		}
-		total_price = total_price + (item.price * item.quantity)
 		order_items << o_item
 	}
 
 	order := Order{
-		id: rand.uuid_v4()
 		customer_id: data.customer_id
 		created_at: time.now()
-		total_price: total_price
 		order_items: order_items
 	}
 
 	return &order
+}
+
+pub fn (o &Order) get_total_price() f64 {
+	mut total_price := 0.0
+
+	for item in o.order_items {
+		total_price += item.quantity * item.price
+	}
+
+	return total_price
 }

@@ -11,6 +11,6 @@ fn (mut ctx App) json_response[T](data T) vweb.Result {
 	return ctx.ok(json_str)
 }
 
-fn json_decode[T](json_str string) !T {
+pub fn json_decode[T](json_str string) !T {
 	return json.unmarshal[T](json_str, json.UnmarshalOpts{})!
 }

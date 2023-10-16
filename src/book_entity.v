@@ -1,13 +1,10 @@
 module main
 
-import json
-import rand
-
 [table: 'book']
 [noinit]
 pub struct Book {
 pub mut:
-	id     string [primary]
+	id     string [default: 'gen_random_uuid()'; primary; sql_type: 'uuid']
 	title  string
 	author string
 	price  f64    [sql_type: 'decimal(8,2)']
@@ -23,7 +20,6 @@ pub struct NewBookDto {
 
 pub fn Book.new(title string, author string, price f64, stock u32) &Book {
 	return &Book{
-		id: rand.uuid_v4()
 		title: title
 		author: author
 		price: price
@@ -32,6 +28,6 @@ pub fn Book.new(title string, author string, price f64, stock u32) &Book {
 }
 
 pub fn Book.from_json(data string) !&Book {
-	input := json.decode(NewBookDto, data)!
+	input := json_decode[NewBookDto](data)!
 	return Book.new(input.title, input.author, input.price, input.stock)
 }

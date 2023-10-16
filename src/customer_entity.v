@@ -1,13 +1,12 @@
 module main
 
-import rand
 import crypto.bcrypt
 
 [table: 'customer']
 [noinit]
 pub struct Customer {
 pub mut:
-	id            string [primary]
+	id            string [default: 'gen_random_uuid()'; primary; sql_type: 'uuid']
 	name          string
 	email         string
 	password_hash string [json: 'passwordHash']
@@ -25,7 +24,6 @@ pub mut:
 
 pub fn Customer.new(data NewCustomerDto) !&Customer {
 	customer := Customer{
-		id: rand.uuid_v4()
 		is_admin: false
 		email: data.email
 		name: data.name
@@ -35,4 +33,10 @@ pub fn Customer.new(data NewCustomerDto) !&Customer {
 	}
 
 	return &customer
+}
+
+pub fn (c &Customer) check_password(password string) bool {
+	bcrypt.compare_hash_and_password(c.password_hash.bytes(), password.bytes()) or { return false }
+
+	return true
 }
