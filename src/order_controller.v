@@ -18,7 +18,7 @@ pub fn (mut ctx App) handle_order_create() vweb.Result {
 		return ctx.text('Unauthorized')
 	}
 
-	input := ctx.json_decode[NewOrderInputBodyDto](ctx.req.data) or {
+	input := json_decode[NewOrderInputBodyDto](ctx.req.data) or {
 		ctx.set_status(400, 'Bad Request')
 		return ctx.text('Invalid JSON body (${err.msg()})')
 	}
@@ -41,8 +41,6 @@ pub fn (mut ctx App) handle_order_create() vweb.Result {
 		customer_id: customer.id
 		order_items: new_order_items
 	}
-
-	eprintln('Creating order ${new_order_dto}')
 
 	created := ctx.order_create(new_order_dto) or {
 		ctx.set_status(500, 'Internal Server Error')

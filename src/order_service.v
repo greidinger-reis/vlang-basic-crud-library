@@ -2,6 +2,7 @@ module main
 
 pub fn (mut ctx App) order_create(input &NewOrderDto) !&Order {
 	o := Order.new(input)
+	print('creating order: ${o}')
 
 	sql ctx.db {
 		insert o into Order

@@ -1,12 +1,13 @@
 module main
 
+import rand
 import time
 
 [table: 'order']
 [noinit]
 pub struct Order {
 pub mut:
-	id          string    [default: 'gen_random_uuid()'; primary; sql_type: 'uuid']
+	id          string    [primary; sql_type: 'varchar(26)']
 	customer_id string    [json: 'customerId'; references: 'customer(id)']
 	created_at  time.Time [json: 'createdAt']
 
@@ -17,7 +18,7 @@ pub mut:
 [noinit]
 pub struct OrderItem {
 pub mut:
-	id       string [default: 'gen_random_uuid()'; primary; sql_type: 'uuid']
+	id       string [primary; sql_type: 'varchar(26)']
 	order_id string [json: 'orderId'; references: 'order(id)']
 	book_id  string [json: 'bookId'; references: 'book(id)']
 	price    f64    [sql_type: 'decimal(8,2)']
@@ -38,17 +39,22 @@ pub mut:
 }
 
 pub fn Order.new(data &NewOrderDto) &Order {
+	order_id := rand.ulid()
 	mut order_items := []OrderItem{}
 
 	for item in data.order_items {
 		o_item := OrderItem{
+			id: rand.ulid()
 			book_id: item.book_id
 			quantity: item.quantity
+			price: item.price
+			order_id: order_id
 		}
 		order_items << o_item
 	}
 
 	order := Order{
+		id: order_id
 		customer_id: data.customer_id
 		created_at: time.now()
 		order_items: order_items

@@ -1,9 +1,7 @@
 module main
 
-import net.http
 import os
 import jwt
-import time
 
 const (
 	auth_secret_key       = os.getenv('AUTH_SECRET')

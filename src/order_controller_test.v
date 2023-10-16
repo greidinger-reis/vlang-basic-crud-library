@@ -42,6 +42,10 @@ fn test_create_order() ! {
 		select from Order limit 1
 	}!
 
+	if found.len == 0 {
+		return error('Order not found')
+	}
+
 	assert found.first().id == o.id
 	assert found.first().customer_id == c.id
 	assert found.first().total_price == 20.0

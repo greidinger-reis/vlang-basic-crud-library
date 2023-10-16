@@ -38,6 +38,5 @@ pub fn (mut ctx App) handle_create() vweb.Result {
 
 	ctx.set_status(201, 'created')
 
-	// for some reason this one works fine
-	return ctx.json(book)
+	return ctx.json_response(*book)
 }

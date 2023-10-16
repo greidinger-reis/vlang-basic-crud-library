@@ -1,10 +1,12 @@
 module main
 
+import rand
+
 [table: 'book']
 [noinit]
 pub struct Book {
 pub mut:
-	id     string [default: 'gen_random_uuid()'; primary; sql_type: 'uuid']
+	id     string [primary; sql_type: 'varchar(26)']
 	title  string
 	author string
 	price  f64    [sql_type: 'decimal(8,2)']
@@ -20,6 +22,7 @@ pub struct NewBookDto {
 
 pub fn Book.new(title string, author string, price f64, stock u32) &Book {
 	return &Book{
+		id: rand.ulid()
 		title: title
 		author: author
 		price: price

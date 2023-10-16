@@ -12,8 +12,6 @@ pub mut:
 }
 
 pub fn App.new(db_handle vweb.DatabasePool[pg.DB]) &App {
-	eprintln('[Vweb] BookController started on /books')
-
 	return &App{
 		db_handle: db_handle
 	}
