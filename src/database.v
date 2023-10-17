@@ -1,3 +1,5 @@
+module main
+
 import orm
 import db.pg
 import db.sqlite
@@ -18,6 +20,14 @@ pub fn make_tables(db orm.Connection) ! {
 		create table Order
 		create table OrderItem
 		create table Payment
+	}!
+}
+
+pub fn create_admin_user(db orm.Connection) ! {
+	admin_user := Customer.new_admin(name: 'admin', email: 'admin@email.com', password: 'admin')!
+
+	sql db {
+		insert admin_user into Customer
 	}!
 }
 

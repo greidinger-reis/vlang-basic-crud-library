@@ -31,7 +31,7 @@ pub fn (mut ctx App) handle_order_create() vweb.Result {
 			return ctx.text('Invalid book id')
 		}
 		new_order_items << NewOrderItemDto{
-			price: book.price
+			price: book.price.f64()
 			book_id: book.id
 			quantity: i.quantity
 		}
@@ -47,7 +47,6 @@ pub fn (mut ctx App) handle_order_create() vweb.Result {
 		return ctx.text('Failed to create order (${err.msg()})')
 	}
 
-	eprintln('Created order ${created}')
 	ctx.set_status(201, 'created')
-	return ctx.json_response(*created)
+	return ctx.json_response(*created.to_dto())
 }
