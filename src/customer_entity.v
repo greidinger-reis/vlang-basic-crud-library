@@ -14,7 +14,7 @@ pub mut:
 	name  string
 	email string [unique]
 	// uncomment this line and watch the compiler go boom
-	// orders []order.Order [fkey: 'customer_id']
+	// orders []Order [fkey: 'customer_id']
 }
 
 pub struct NewCustomerDto {
@@ -53,7 +53,6 @@ pub fn Customer.new_admin(data NewCustomerDto) !&Customer {
 }
 
 pub fn (c &Customer) check_password(password string) bool {
-	eprintln('checking password: ${password} against ${c.password_hash}')
 	bcrypt.compare_hash_and_password(password.bytes(), c.password_hash.bytes()) or { return false }
 
 	return true

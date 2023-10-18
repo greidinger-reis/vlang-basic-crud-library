@@ -7,7 +7,7 @@ struct SignInBodyDto {
 	password string [required]
 }
 
-struct SignInResponseDto {
+struct AuthResponseDto {
 	id           string [required]
 	name         string [required]
 	email        string [required]
@@ -41,10 +41,44 @@ pub fn (mut ctx App) handle_signin() vweb.Result {
 
 	eprintln(customer_found)
 
-	return ctx.json_response(SignInResponseDto{
+	return ctx.json_response(AuthResponseDto{
 		id: customer_found.id
 		email: customer_found.email
 		name: customer_found.name
+		access_token: token
+	})
+}
+
+['/auth/signup'; post]
+pub fn (mut ctx App) handle_signup() vweb.Result {
+	credentials := json_decode[NewCustomerDto](ctx.req.data) or {
+		ctx.set_status(400, '')
+		return ctx.text('Bad request')
+	}
+
+	if _ := ctx.customer_find_by_email(credentials.email) {
+		ctx.set_status(400, '')
+		return ctx.text('Email already in use')
+	}
+
+	new_customer := Customer.new(credentials) or {
+		ctx.set_status(422, '')
+		return ctx.text('Failed to create customer. ${err.msg()}')
+	}
+
+	ctx.customer_create(new_customer) or {
+		ctx.set_status(422, '')
+		return ctx.text('Failed to create customer. ${err.msg()}')
+	}
+	token := ctx.make_token(sub: new_customer.id) or {
+		ctx.set_status(422, '')
+		return ctx.text('Failed to create customer. ${err.msg()}')
+	}
+
+	return ctx.json_response(AuthResponseDto{
+		id: new_customer.id
+		email: new_customer.email
+		name: new_customer.name
 		access_token: token
 	})
 }
