@@ -94,3 +94,7 @@ pub fn (o &Order) to_dto() &OrderResponseDto {
 		total_price: o.get_total_price()
 	}
 }
+
+pub fn (o []Order) to_dto() []OrderResponseDto {
+	return o.map(*it.to_dto())
+}
