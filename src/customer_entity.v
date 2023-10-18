@@ -10,7 +10,7 @@ mut:
 	password_hash string
 	is_admin      bool
 pub mut:
-	id    string [primary; sql_type: 'varchar(26)']
+	id    string [primary]
 	name  string
 	email string [unique]
 	// uncomment this line and watch the compiler go boom

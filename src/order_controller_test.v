@@ -60,6 +60,7 @@ fn test_create_order() ! {
 }
 
 fn test_find_all_orders_sqlite() ! {
+	n_orders := 10
 	mut conn := create_connection_sqlite_memory()
 	defer {
 		conn.close() or { panic(err) }
@@ -67,13 +68,13 @@ fn test_find_all_orders_sqlite() ! {
 
 	make_tables(conn)!
 	create_admin_user(conn) or { dump('admin user already exists') }
-	seed_tables(conn, 10)!
+	seed_tables(conn, n_orders)!
 
 	orders := sql conn {
 		select from Order
 	}!
 
-	dump('orders: ${orders}')
+	assert orders.len == n_orders
 }
 
 fn test_find_all_orders_pg() ! {

@@ -16,6 +16,7 @@ const (
 pub fn make_tables(db orm.Connection) ! {
 	sql db {
 		create table Book
+		create table BookImage
 		create table Customer
 		create table Order
 		create table OrderItem
@@ -76,6 +77,12 @@ pub fn create_connection_pg() pg.DB {
 
 pub fn create_connection_sqlite_memory() sqlite.DB {
 	return sqlite.connect(':memory:') or {
+		panic('Failed to create database connection: (${err.msg()})')
+	}
+}
+
+pub fn create_connection_sqlite() sqlite.DB {
+	return sqlite.connect('db.sqlite') or {
 		panic('Failed to create database connection: (${err.msg()})')
 	}
 }

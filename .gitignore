@@ -1,4 +1,5 @@
 # Binaries for programs and plugins
+node_modules
 main
 vlang
 *.exe
@@ -20,5 +21,5 @@ bin/
 .env
 
 # vweb and database
-*.db
 *.js
+*.sqlite

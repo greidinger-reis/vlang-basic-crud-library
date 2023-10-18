@@ -14,3 +14,11 @@ fn (mut ctx App) json_response[T](data T) vweb.Result {
 pub fn json_decode[T](json_str string) !T {
 	return json.unmarshal[T](json_str, json.UnmarshalOpts{})!
 }
+
+pub fn validate_form_data[T](form_data map[string]string) ! {
+	$for field in T.fields {
+		if form_data[field.name].is_blank() {
+			return error('Missing field: ${field.name}')
+		}
+	}
+}

@@ -14,8 +14,8 @@ struct AuthResponseDto {
 	access_token string [required]
 }
 
-['/auth/signin'; post]
-pub fn (mut ctx App) handle_signin() vweb.Result {
+['/api/auth/signin'; post]
+pub fn (mut ctx App) handle_customer_signin() vweb.Result {
 	credentials := json_decode[SignInBodyDto](ctx.req.data) or {
 		ctx.set_status(400, '')
 		return ctx.text('Bad request')
@@ -49,8 +49,8 @@ pub fn (mut ctx App) handle_signin() vweb.Result {
 	})
 }
 
-['/auth/signup'; post]
-pub fn (mut ctx App) handle_signup() vweb.Result {
+['/api/auth/signup'; post]
+pub fn (mut ctx App) handle_customer_signup() vweb.Result {
 	credentials := json_decode[NewCustomerDto](ctx.req.data) or {
 		ctx.set_status(400, '')
 		return ctx.text('Bad request')

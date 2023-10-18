@@ -11,7 +11,7 @@ struct NewOrderInputBodyDto {
 	items []NewOrderInputDto
 }
 
-['/orders'; post]
+['/api/orders'; post]
 pub fn (mut ctx App) handle_order_create() vweb.Result {
 	customer := ctx.get_current_customer() or {
 		ctx.set_status(401, '')
@@ -26,7 +26,7 @@ pub fn (mut ctx App) handle_order_create() vweb.Result {
 	mut new_order_items := []NewOrderItemDto{}
 
 	for i in input.items {
-		book := ctx.book_get_by_id(i.book_id) or {
+		book := ctx.book_find_by_id(i.book_id) or {
 			ctx.set_status(400, '')
 			return ctx.text('Invalid book id')
 		}
@@ -51,8 +51,8 @@ pub fn (mut ctx App) handle_order_create() vweb.Result {
 	return ctx.json_response(*created.to_dto())
 }
 
-['/orders'; get]
-pub fn (mut ctx App) handle_get_orders() vweb.Result {
+['/api/orders'; get]
+pub fn (mut ctx App) handle_order_find_all() vweb.Result {
 	customer := ctx.get_current_customer() or {
 		ctx.set_status(401, '')
 		return ctx.text('Unauthorized')
@@ -69,7 +69,7 @@ pub fn (mut ctx App) handle_get_orders() vweb.Result {
 }
 
 ['/orders/:id'; get]
-pub fn (mut ctx App) handle_get_order(id string) vweb.Result {
+pub fn (mut ctx App) handle_order_find_one(id string) vweb.Result {
 	customer := ctx.get_current_customer() or {
 		ctx.set_status(401, '')
 		return ctx.text('Unauthorized')

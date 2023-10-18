@@ -7,10 +7,9 @@ import time
 [noinit]
 pub struct Order {
 pub mut:
-	id          string    [primary; sql_type: 'varchar(26)']
-	customer_id string    [json: 'customerId'; references: 'customer(id)']
-	created_at  time.Time [json: 'createdAt']
-
+	id          string      [primary]
+	customer_id string      [json: 'customerId'; references: 'customer(id)']
+	created_at  time.Time   [json: 'createdAt']
 	order_items []OrderItem [fkey: 'order_id'; json: 'orderItems']
 }
 
@@ -18,7 +17,7 @@ pub mut:
 [noinit]
 pub struct OrderItem {
 pub mut:
-	id       string [primary; sql_type: 'varchar(26)']
+	id       string [primary]
 	order_id string [json: 'orderId'; references: 'order(id)']
 	book_id  string [json: 'bookId'; references: 'book(id)']
 	// Price as f64 is bugged when inserting using the orm. it gets rounded to 0.0 idk why
