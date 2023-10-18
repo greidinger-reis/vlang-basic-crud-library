@@ -48,6 +48,47 @@ fn test_create_order() ! {
 
 	assert found.first().id == o.id
 	assert found.first().customer_id == c.id
-	assert found.first().total_price == 20.0
+	assert found.first().get_total_price() == 20.0
 	assert found.first().created_at.unix == o.created_at.unix
+
+	sql conn {
+		delete from OrderItem where order_id == o.id
+		delete from Order where id == o.id
+		delete from Customer where id == c.id
+		delete from Book where id == b.id
+	}!
+}
+
+fn test_find_all_orders_sqlite() ! {
+	mut conn := create_connection_sqlite_memory()
+	defer {
+		conn.close() or { panic(err) }
+	}
+
+	make_tables(conn)!
+	create_admin_user(conn) or { dump('admin user already exists') }
+	seed_tables(conn, 10)!
+
+	orders := sql conn {
+		select from Order
+	}!
+
+	dump('orders: ${orders}')
+}
+
+fn test_find_all_orders_pg() ! {
+	mut conn := create_connection_pg()
+	defer {
+		conn.close()
+	}
+
+	make_tables(conn)!
+	create_admin_user(conn) or { dump('admin user already exists') }
+	seed_tables(conn, 5)!
+
+	orders := sql conn {
+		select from Order
+	}!
+
+	dump('orders: ${orders}')
 }

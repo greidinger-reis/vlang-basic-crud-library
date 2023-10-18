@@ -23,6 +23,39 @@ pub fn make_tables(db orm.Connection) ! {
 	}!
 }
 
+pub fn seed_tables(db orm.Connection, n int) ! {
+	customer_list := sql db {
+		select from Customer where email == 'admin@email.com'
+	}!
+	if customer_list.len == 0 {
+		return error('Admin user not found')
+	}
+	customer := &customer_list[0]
+
+	book := Book.new('Test book', 'Test author', 10.0, 10)
+
+	sql db {
+		insert book into Book
+	}!
+
+	mut items := []NewOrderItemDto{}
+	items << NewOrderItemDto{
+		book_id: book.id
+		quantity: 1
+		price: book.price.f64()
+	}
+
+	for _ in 0 .. n {
+		order := Order.new(
+			customer_id: customer.id
+			order_items: items
+		)
+		sql db {
+			insert order into Order
+		}!
+	}
+}
+
 pub fn create_admin_user(db orm.Connection) ! {
 	admin_user := Customer.new_admin(name: 'admin', email: 'admin@email.com', password: 'admin')!
 
