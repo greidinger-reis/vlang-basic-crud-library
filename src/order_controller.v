@@ -1,6 +1,7 @@
 module main
 
 import vweb
+import json
 
 struct NewOrderInputDto {
 	book_id  string
@@ -18,7 +19,7 @@ pub fn (mut ctx App) handle_order_create() vweb.Result {
 		return ctx.text('Unauthorized')
 	}
 
-	input := json_decode[NewOrderInputBodyDto](ctx.req.data) or {
+	input := json.decode(NewOrderInputBodyDto, ctx.req.data) or {
 		ctx.set_status(400, '')
 		return ctx.text('Invalid JSON body (${err.msg()})')
 	}
@@ -48,7 +49,7 @@ pub fn (mut ctx App) handle_order_create() vweb.Result {
 	}
 
 	ctx.set_status(201, '')
-	return ctx.json_response(*created.to_dto())
+	return ctx.json(created.to_dto())
 }
 
 ['/api/orders'; get]
@@ -65,7 +66,7 @@ pub fn (mut ctx App) handle_order_find_all() vweb.Result {
 
 	orders := ctx.order_find_all()
 
-	return ctx.json_response(orders.to_dto())
+	return ctx.json(orders.to_dto())
 }
 
 ['/orders/:id'; get]
@@ -85,5 +86,5 @@ pub fn (mut ctx App) handle_order_find_one(id string) vweb.Result {
 		return ctx.text('Forbidden')
 	}
 
-	return ctx.json_response(*order.to_dto())
+	return ctx.json(order.to_dto())
 }

@@ -9,3 +9,10 @@ pub fn (mut ctx App) admin_booklist() vweb.Result {
 
 	return $vweb.html()
 }
+
+['/admin/books/new'; get]
+pub fn (mut ctx App) admin_newbook() vweb.Result {
+	page_title := 'Admin New Book Page'
+
+	return $vweb.html()
+}

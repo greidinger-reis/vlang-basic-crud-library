@@ -1,0 +1,34 @@
+@include '../layout.html'
+<form
+    class="max-w-xl my-32 mx-auto w-full flex flex-col gap-2"
+    hx-encoding="multipart/form-data"
+    hx-post="/api/books"
+>
+    <h3 class="text-xl font-bold text-center">New book</h3>
+    <div class="form-control gap-2">
+        <label for="image">Book cover</label>
+        <input
+            type="file"
+            class="file-input file-input-bordered"
+            accept="image/*"
+            name="image"
+        />
+    </div>
+    <div class="form-control gap-2">
+        <label for="title">Title</label>
+        <input type="text" class="input input-bordered" name="title" />
+    </div>
+    <div class="form-control gap-2">
+        <label for="author">Author name</label>
+        <input type="text" class="input input-bordered" name="author" />
+    </div>
+    <div class="form-control gap-2">
+        <label for="price">Price</label>
+        <input type="number" class="input input-bordered" name="price" />
+    </div>
+    <div class="form-control gap-2">
+        <label for="stock">Stock</label>
+        <input type="number" class="input input-bordered" name="stock" />
+    </div>
+    <button type="submit" class="btn">Submit</button>
+</form>

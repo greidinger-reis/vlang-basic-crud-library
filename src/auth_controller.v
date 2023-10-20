@@ -1,6 +1,7 @@
 module main
 
 import vweb
+import json
 
 struct SignInBodyDto {
 	email    string [required]
@@ -16,7 +17,7 @@ struct AuthResponseDto {
 
 ['/api/auth/signin'; post]
 pub fn (mut ctx App) handle_customer_signin() vweb.Result {
-	credentials := json_decode[SignInBodyDto](ctx.req.data) or {
+	credentials := json.decode(SignInBodyDto, ctx.req.data) or {
 		ctx.set_status(400, '')
 		return ctx.text('Bad request')
 	}
@@ -41,7 +42,7 @@ pub fn (mut ctx App) handle_customer_signin() vweb.Result {
 
 	eprintln(customer_found)
 
-	return ctx.json_response(AuthResponseDto{
+	return ctx.json(AuthResponseDto{
 		id: customer_found.id
 		email: customer_found.email
 		name: customer_found.name
@@ -51,7 +52,7 @@ pub fn (mut ctx App) handle_customer_signin() vweb.Result {
 
 ['/api/auth/signup'; post]
 pub fn (mut ctx App) handle_customer_signup() vweb.Result {
-	credentials := json_decode[NewCustomerDto](ctx.req.data) or {
+	credentials := json.decode(NewCustomerDto, ctx.req.data) or {
 		ctx.set_status(400, '')
 		return ctx.text('Bad request')
 	}
@@ -75,7 +76,7 @@ pub fn (mut ctx App) handle_customer_signup() vweb.Result {
 		return ctx.text('Failed to create customer. ${err.msg()}')
 	}
 
-	return ctx.json_response(AuthResponseDto{
+	return ctx.json(AuthResponseDto{
 		id: new_customer.id
 		email: new_customer.email
 		name: new_customer.name

@@ -1,31 +1,26 @@
 module main
 
 import vweb
-import db.pg
-// import db.sqlite
+// import db.pg
+import db.sqlite
 
 pub struct App {
-	vweb.Context
-pub:
-	db_handle vweb.DatabasePool[pg.DB] [required]
+	vweb.Context // pub:
+	// 	db_handle vweb.DatabasePool[pg.DB] [required]
+	// pub mut:
+	// 	db pg.DB
 pub mut:
-	db pg.DB
+	db sqlite.DB
 }
 
-pub fn App.new(db_handle vweb.DatabasePool[pg.DB]) &App {
-	return &App{
-		db_handle: db_handle
-	}
-}
-
-// pub fn App.new(db sqlite.DB) &App {
+// pub fn App.new(db_handle vweb.DatabasePool[pg.DB]) &App {
 // 	return &App{
-// 		db: db
+// 		db_handle: db_handle
 // 	}
 // }
 
-['/'; get]
-pub fn (app &App) index() vweb.Result {
-	page_title := 'Vweb Home'
-	return $vweb.html()
+pub fn App.new(db sqlite.DB) &App {
+	return &App{
+		db: db
+	}
 }

@@ -14,14 +14,13 @@ pub fn (mut ctx App) handle_book_get_one(id string) vweb.Result {
 		return ctx.text('Not Found')
 	}
 
-	return ctx.json_response(*book)
+	return ctx.json(book)
 }
 
 ['/api/books'; get]
 pub fn (mut ctx App) handle_book_get_all() vweb.Result {
 	book_list := ctx.book_find_all()
-	// return ctx.json(book_list)
-	return ctx.json_response(book_list)
+	return ctx.json(book_list)
 }
 
 // TODO: Protect this route with authentication (admin only)
@@ -50,13 +49,11 @@ pub fn (mut ctx App) handle_book_create() vweb.Result {
 	}
 
 	ctx.book_create(book_data, book_cover) or {
-		ctx.set_status(500, 'Internal Server Error')
+		ctx.set_status(500, '')
 		return ctx.text('Internal Server Error (${err.msg()})')
 	}
 
 	ctx.set_status(201, 'created')
-
-	// return ctx.text('Created')
 	return ctx.redirect('/admin/books')
 }
 
@@ -73,6 +70,9 @@ pub fn (mut ctx App) handle_book_get_cover(id string) vweb.Result {
 		ctx.set_status(404, '')
 		return ctx.text('Not Found')
 	}
+
+	ctx.header.set(.cache_control, 'public, max-age=31536000, immutable')
+	ctx.header.set(.content_disposition, 'inline; filename="${filenames[0]}"')
 
 	return ctx.file('src/assets/covers/${filenames[0]}')
 }
