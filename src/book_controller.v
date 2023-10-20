@@ -1,6 +1,11 @@
 module main
 
+import os
 import vweb
+
+const (
+	valid_image_types = ['image/jpeg', 'image/png', 'image/webp']
+)
 
 ['/api/books/:id'; get]
 pub fn (mut ctx App) handle_book_get_one(id string) vweb.Result {
@@ -22,17 +27,29 @@ pub fn (mut ctx App) handle_book_get_all() vweb.Result {
 // TODO: Protect this route with authentication (admin only)
 ['/api/books'; post]
 pub fn (mut ctx App) handle_book_create() vweb.Result {
+	if ctx.files['image'].len == 0 {
+		ctx.set_status(400, '')
+		return ctx.text('Missing book cover')
+	}
+
+	book_cover := ctx.files['image'][0]
+
+	if book_cover.content_type !in valid_image_types {
+		ctx.set_status(400, '')
+		return ctx.text('Invalid book cover type')
+	}
+
+	if book_cover.data.len > 8 * 1024 * 1024 {
+		ctx.set_status(400, '')
+		return ctx.text('Book cover too large. (max 8MB)')
+	}
+
 	book_data := Book.from_form(ctx.form) or {
 		ctx.set_status(400, '')
 		return ctx.text('Invalid form data (${err.msg()})')
 	}
 
-	book_image := BookImage.from_files(book_data, ctx.files) or {
-		ctx.set_status(400, '')
-		return ctx.text('Invalid form data (${err.msg()})')
-	}
-
-	ctx.book_create(book_data, book_image) or {
+	ctx.book_create(book_data, book_cover) or {
 		ctx.set_status(500, 'Internal Server Error')
 		return ctx.text('Internal Server Error (${err.msg()})')
 	}
@@ -44,13 +61,18 @@ pub fn (mut ctx App) handle_book_create() vweb.Result {
 }
 
 ['/api/books/:id/cover'; get]
-pub fn (mut ctx App) handle_image_get(id string) vweb.Result {
-	book_image := ctx.book_image_find_by_id(id) or {
+pub fn (mut ctx App) handle_book_get_cover(id string) vweb.Result {
+	files := os.ls('src/assets/covers') or {
 		ctx.set_status(404, '')
 		return ctx.text('Not Found')
 	}
 
-	ctx.set_content_type(book_image.content_type)
+	filenames := files.filter(it.starts_with(id))
 
-	return ctx.ok(book_image.blob)
+	if filenames.len == 0 {
+		ctx.set_status(404, '')
+		return ctx.text('Not Found')
+	}
+
+	return ctx.file('src/assets/covers/${filenames[0]}')
 }

@@ -16,7 +16,6 @@ const (
 pub fn make_tables(db orm.Connection) ! {
 	sql db {
 		create table Book
-		create table BookImage
 		create table Customer
 		create table Order
 		create table OrderItem

@@ -23,3 +23,7 @@ bin/
 # vweb and database
 *.js
 *.sqlite
+
+#static images
+
+src/assets/covers/*
