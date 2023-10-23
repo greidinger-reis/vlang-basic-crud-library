@@ -66,6 +66,9 @@ fn (mut ctx App) handle_signin() vweb.Result {
 		max_age: 0
 		path: '/'
 		domain: ctx.req.host
+		secure: true
+		http_only: true
+		same_site: .same_site_none_mode
 	)
 
 	return ctx.ok('')
@@ -110,6 +113,9 @@ fn (mut ctx App) handle_signup() vweb.Result {
 		max_age: 0
 		path: '/'
 		domain: ctx.req.host
+		secure: true
+		http_only: true
+		same_site: .same_site_none_mode
 	)
 
 	return ctx.ok('')
