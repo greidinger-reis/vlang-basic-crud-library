@@ -24,7 +24,19 @@ pub mut:
 	password string [required]
 }
 
-pub fn Customer.new(data NewCustomerDto) !&Customer {
+pub fn Customer.from_form(form map[string]string) !&Customer {
+	validate_form_data[NewCustomerDto](form)!
+
+	data := &NewCustomerDto{
+		name: form['name']
+		email: form['email']
+		password: form['password']
+	}
+
+	return Customer.new(data)
+}
+
+pub fn Customer.new(data &NewCustomerDto) !&Customer {
 	customer := Customer{
 		id: rand.ulid()
 		is_admin: false

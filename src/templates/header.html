@@ -1,0 +1,30 @@
+<script>
+	function logout() {
+		document.cookie = "Token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+		window.location.reload();
+	}
+</script>
+
+<header class="flex items-center p-4 justify-end bg-primary font-medium text-white">
+	@if current_user == none
+	<div class="flex gap-2 items-center">
+		<a class="link link-hover" href="/signin">Sign In</a>
+		<a class="link link-hover" href="/signup">Sign Up</a>
+	</div>
+	@else
+	${&Customer(current_user).name}
+	<div class="dropdown dropdown-end">
+		<button class="btn btn-ghost btn-sm rounded-btn">
+			@include '../assets/icons/chevron-down.html'
+		</button>
+		<ul class="shadow menu dropdown-content bg-base-100 rounded-box w-52">
+			<li>
+				<a href="/settings">Settings</a>
+			</li>
+			<li>
+				<button type="submit" onclick="logout()">Logout</button>
+			</li>
+		</ul>
+	</div>
+	@end
+</header>

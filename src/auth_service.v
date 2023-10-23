@@ -24,8 +24,7 @@ pub fn (mut ctx App) make_token(payload JwtPayload) !string {
 }
 
 pub fn (mut ctx App) get_current_customer() ?&Customer {
-	auth_header := ctx.get_header('Authorization')
-	token := auth_header.replace('Bearer ', '')
+	token := ctx.get_cookie('Token') or { return none }
 	decoded := jwt.decode[JwtPayload](token: token, key: auth_secret_key) or { return none }
 	customer := ctx.customer_find_by_id(decoded.sub)
 	return customer

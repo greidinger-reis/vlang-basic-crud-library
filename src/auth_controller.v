@@ -1,11 +1,21 @@
 module main
 
+import time
 import vweb
-import json
+import templates
 
 struct SignInBodyDto {
 	email    string [required]
 	password string [required]
+}
+
+fn SignInBodyDto.from_form(form map[string]string) !&SignInBodyDto {
+	validate_form_data[SignInBodyDto](form)!
+
+	return &SignInBodyDto{
+		email: form['email']
+		password: form['password']
+	}
 }
 
 struct AuthResponseDto {
@@ -16,70 +26,91 @@ struct AuthResponseDto {
 }
 
 ['/api/auth/signin'; post]
-pub fn (mut ctx App) handle_customer_signin() vweb.Result {
-	credentials := json.decode(SignInBodyDto, ctx.req.data) or {
+fn (mut ctx App) handle_signin() vweb.Result {
+	credentials := SignInBodyDto.from_form(ctx.form) or {
 		ctx.set_status(400, '')
-		return ctx.text('Bad request')
+		error := 'Invalid Form Data'
+		return ctx.html(templates.form_error(error))
 	}
 
 	customer_found := ctx.customer_find_by_email(credentials.email) or {
 		ctx.set_status(400, '')
-		return ctx.text('Invalid Credentials')
+		error := 'Invalid Credentials'
+		return ctx.html(templates.form_error(error))
 	}
 
 	valid_password := customer_found.check_password(credentials.password)
-	eprintln(valid_password)
 
 	if !valid_password {
 		ctx.set_status(400, '')
-		return ctx.text('Invalid Credentials')
+		error := 'Invalid Credentials'
+		return ctx.html(templates.form_error(error))
 	}
 
 	token := ctx.make_token(sub: customer_found.id) or {
-		ctx.set_status(400, '')
-		return ctx.text('Unauthorized')
+		ctx.set_status(422, '')
+		error := 'Failed to create customer. ${err.msg()}'
+		return ctx.html(templates.form_error(error))
 	}
 
-	eprintln(customer_found)
+	ctx.header.add_custom('HX-Redirect', '/') or {
+		ctx.set_status(500, '')
+		error := 'Unknown Error'
+		return ctx.html(templates.form_error(error))
+	}
 
-	return ctx.json(AuthResponseDto{
-		id: customer_found.id
-		email: customer_found.email
-		name: customer_found.name
-		access_token: token
-	})
+	ctx.set_cookie(
+		name: 'Token'
+		value: token
+		expires: time.now().add_days(7)
+		max_age: 0
+		path: '/'
+		domain: ctx.req.host
+	)
+
+	return ctx.ok('')
 }
 
 ['/api/auth/signup'; post]
-pub fn (mut ctx App) handle_customer_signup() vweb.Result {
-	credentials := json.decode(NewCustomerDto, ctx.req.data) or {
+fn (mut ctx App) handle_signup() vweb.Result {
+	user_data := Customer.from_form(ctx.form) or {
 		ctx.set_status(400, '')
-		return ctx.text('Bad request')
+		error := 'Invalid form data ${err.msg()}'
+		return ctx.html(templates.form_error(error))
 	}
 
-	if _ := ctx.customer_find_by_email(credentials.email) {
+	if _ := ctx.customer_find_by_email(user_data.email) {
 		ctx.set_status(400, '')
-		return ctx.text('Email already in use')
+		error := 'Email already in use'
+		return ctx.html(templates.form_error(error))
 	}
 
-	new_customer := Customer.new(credentials) or {
+	ctx.customer_create(user_data) or {
 		ctx.set_status(422, '')
-		return ctx.text('Failed to create customer. ${err.msg()}')
+		error := 'Failed to create customer. ${err.msg()}'
+		return ctx.html(templates.form_error(error))
 	}
 
-	ctx.customer_create(new_customer) or {
+	token := ctx.make_token(sub: user_data.id) or {
 		ctx.set_status(422, '')
-		return ctx.text('Failed to create customer. ${err.msg()}')
-	}
-	token := ctx.make_token(sub: new_customer.id) or {
-		ctx.set_status(422, '')
-		return ctx.text('Failed to create customer. ${err.msg()}')
+		error := 'Failed to create customer. ${err.msg()}'
+		return ctx.html(templates.form_error(error))
 	}
 
-	return ctx.json(AuthResponseDto{
-		id: new_customer.id
-		email: new_customer.email
-		name: new_customer.name
-		access_token: token
-	})
+	ctx.header.add_custom('HX-Redirect', '/') or {
+		ctx.set_status(500, '')
+		error := 'Unknown error'
+		return ctx.html(templates.form_error(error))
+	}
+
+	ctx.set_cookie(
+		name: 'Token'
+		value: token
+		expires: time.now().add_days(7)
+		max_age: 0
+		path: '/'
+		domain: ctx.req.host
+	)
+
+	return ctx.ok('')
 }
