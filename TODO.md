@@ -1,3 +1,4 @@
 #TODO
 
-- [ ] Implement CSRF Tokens
+- [x] Implement CSRF Tokens
+- [ ] Work on dashboard
