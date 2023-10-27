@@ -14,7 +14,7 @@ struct NewOrderInputBodyDto {
 
 ['/api/orders'; post]
 pub fn (mut ctx App) handle_order_create() vweb.Result {
-	customer := ctx.get_current_user() or {
+	if !ctx.user_signed_in {
 		ctx.set_status(401, '')
 		return ctx.text('Unauthorized')
 	}
@@ -39,7 +39,7 @@ pub fn (mut ctx App) handle_order_create() vweb.Result {
 	}
 
 	new_order_dto := &NewOrderDto{
-		customer_id: customer.id
+		customer_id: ctx.current_user.id
 		order_items: new_order_items
 	}
 
@@ -71,7 +71,7 @@ pub fn (mut ctx App) handle_order_find_all() vweb.Result {
 
 ['/orders/:id'; get]
 pub fn (mut ctx App) handle_order_find_one(id string) vweb.Result {
-	customer := ctx.get_current_user() or {
+	if !ctx.user_signed_in {
 		ctx.set_status(401, '')
 		return ctx.text('Unauthorized')
 	}
@@ -81,7 +81,7 @@ pub fn (mut ctx App) handle_order_find_one(id string) vweb.Result {
 		return ctx.text('Order not found')
 	}
 
-	if order.customer_id != customer.id {
+	if order.customer_id != ctx.current_user.id {
 		ctx.set_status(403, '')
 		return ctx.text('Forbidden')
 	}
