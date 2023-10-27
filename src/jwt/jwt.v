@@ -22,10 +22,53 @@ const (
 	}
 )
 
+pub struct JWT {
+	algorithm Algorithm
+	key       string
+}
+
+pub struct StandardClaims {
+	iss string
+	sub string
+	aud string
+	exp int
+	nbf int
+	iat int
+	jti string
+}
+
 pub enum Algorithm {
 	hs256
 	hs384
 	hs512
+}
+
+pub struct EncodeOptions[T] {
+	payload   T
+	key       string
+	algorithm Algorithm = .hs256
+	headers   map[string]json2.Any
+}
+
+pub struct DecodeOptions {
+	token     string
+	key       string
+	algorithm Algorithm = .hs256
+	verify    bool      = true
+}
+
+pub struct VerifyOptions {
+	token     string
+	key       string
+	algorithm Algorithm = .hs256
+}
+
+pub fn (j JWT) sign(message string) string {
+	hash_fn := jwt.algorithms[j.algorithm]
+	block_size := jwt.block_sizes[j.algorithm]
+	signature := hmac.new(j.key.bytes(), message.bytes(), hash_fn, block_size)
+	url_encoded := base64.url_encode_str(signature.bytestr())
+	return url_encoded
 }
 
 pub fn (a Algorithm) str() string {
@@ -42,41 +85,11 @@ pub fn (a Algorithm) str() string {
 	}
 }
 
-pub struct JWT {
-	algorithm Algorithm
-	key       string
-}
-
-pub struct JwtClaims {
-	iss string
-	sub string
-	aud string
-	exp int
-	nbf int
-	iat int
-	jti string
-}
-
-fn (j JWT) sign(message string) string {
-	hash_fn := jwt.algorithms[j.algorithm]
-	block_size := jwt.block_sizes[j.algorithm]
-	signature := hmac.new(j.key.bytes(), message.bytes(), hash_fn, block_size)
-	url_encoded := base64.url_encode_str(signature.bytestr())
-	return url_encoded
-}
-
 fn (j JWT) verify(token string) bool {
 	split_token := token.split('.')
 	signing_input := split_token[..2].join('.')
 	signature := split_token[2]
 	return j.sign(signing_input) == signature
-}
-
-pub struct EncodeOptions[T] {
-	payload   T
-	key       string
-	algorithm Algorithm = .hs256
-	headers   map[string]json2.Any
 }
 
 pub fn encode[T](options EncodeOptions[T]) !string {
@@ -96,14 +109,7 @@ pub fn encode[T](options EncodeOptions[T]) !string {
 	signing_input := segments.join('.')
 	segments << jwt.sign(signing_input)
 	return segments.join('.')
-}
-
-pub struct DecodeOptions {
-	token     string
-	key       string
-	algorithm Algorithm = .hs256
-	verify    bool      = true
-}
+};
 
 pub fn decode[T](options DecodeOptions) !T {
 	jwt := JWT{
@@ -118,16 +124,10 @@ pub fn decode[T](options DecodeOptions) !T {
 	}
 
 	payload_segment := split_token[1]
-	payload_data := base64.decode_str(payload_segment)
+	payload_data := base64.url_decode_str(payload_segment)
 	payload := json2.decode[T](payload_data)!
 	return payload
-}
-
-pub struct VerifyOptions {
-	token     string
-	key       string
-	algorithm Algorithm = .hs256
-}
+};
 
 pub fn verify(options VerifyOptions) bool {
 	jwt := JWT{

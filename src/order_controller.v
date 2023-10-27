@@ -14,7 +14,7 @@ struct NewOrderInputBodyDto {
 
 ['/api/orders'; post]
 pub fn (mut ctx App) handle_order_create() vweb.Result {
-	customer := ctx.get_current_customer() or {
+	customer := ctx.get_current_user() or {
 		ctx.set_status(401, '')
 		return ctx.text('Unauthorized')
 	}
@@ -54,7 +54,7 @@ pub fn (mut ctx App) handle_order_create() vweb.Result {
 
 ['/api/orders'; get]
 pub fn (mut ctx App) handle_order_find_all() vweb.Result {
-	customer := ctx.get_current_customer() or {
+	customer := ctx.get_current_user() or {
 		ctx.set_status(401, '')
 		return ctx.text('Unauthorized')
 	}
@@ -71,7 +71,7 @@ pub fn (mut ctx App) handle_order_find_all() vweb.Result {
 
 ['/orders/:id'; get]
 pub fn (mut ctx App) handle_order_find_one(id string) vweb.Result {
-	customer := ctx.get_current_customer() or {
+	customer := ctx.get_current_user() or {
 		ctx.set_status(401, '')
 		return ctx.text('Unauthorized')
 	}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    @include '../layout/head.html'
+    <body>
+        @include '../layout/header.html'
+        <div
+            class="w-full max-w-xl mx-auto py-32 space-y-4"
+            hx-ext="response-targets"
+        >
+            <div id="error"></div>
+            <form
+                hx-post="/api/auth/signin"
+                hx-indicator="#spinner"
+                hx-target-4*="#error"
+                hx-target-5*="#error"
+                class="form-control gap-4"
+            >
+                <input
+                    type="hidden"
+                    name="@csrf_config.token_name"
+                    value="@csrf_token"
+                />
+                <div class="form-control">
+                    <label for="email">Email</label>
+                    <input
+                        type="email"
+                        required
+                        name="email"
+                        class="input input-primary"
+                    />
+                </div>
+                <div class="form-control">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        required
+                        minlength="3"
+                        name="password"
+                        class="input input-primary"
+                    />
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">
+                    Sign In
+                    <span
+                        id="spinner"
+                        class="hidden animate-spin text-base-content"
+                    >
+                        <i data-lucide="loader2"></i>
+                    </span>
+                </button>
+            </form>
+        </div>
+    </body>
+</html>

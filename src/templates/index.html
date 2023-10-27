@@ -1,6 +1,10 @@
-@include 'layout.html'
-@include 'header.html'
-
-<div class="flex items-center justify-center p-4">
-    @include 'books/list.html'
-</div>
+<!DOCTYPE html>
+<html lang="en">
+    @include 'layout/head.html'
+    <body>
+        @include 'layout/header.html'
+        <div class="flex items-center justify-center p-4">
+            @include 'books/list.html'
+        </div>
+    </body>
+</html>

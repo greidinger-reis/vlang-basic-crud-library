@@ -1,0 +1,31 @@
+<header
+    class="flex items-center p-4 justify-end bg-primary font-medium text-white"
+>
+    @if !ctx.user_signed_in
+    <div class="flex gap-2 items-center">
+        <a class="link link-hover" href="/signin">Sign In</a>
+        <a class="link link-hover" href="/signup">Sign Up</a>
+    </div>
+    @else @ctx.current_user.name
+    <div class="dropdown dropdown-end">
+        <button class="btn btn-ghost btn-sm rounded-btn">
+            <i data-lucide="chevron-down"></i>
+        </button>
+        <ul class="shadow menu dropdown-content bg-base-100 rounded-box w-52">
+            <li>
+                <a href="/settings">Settings</a>
+            </li>
+            <li>
+                <form hx-swap="none" hx-post="/api/auth/signout">
+                    <input
+                        type="hidden"
+                        name="@csrf_config.token_name"
+                        value="@csrf_token"
+                    />
+                    <button type="submit">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+    @end
+</header>

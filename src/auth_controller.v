@@ -1,6 +1,5 @@
 module main
 
-import time
 import vweb
 import templates
 
@@ -47,7 +46,7 @@ fn (mut ctx App) handle_signin() vweb.Result {
 		return ctx.html(templates.form_error(error))
 	}
 
-	token := ctx.make_token(sub: customer_found.id) or {
+	token := ctx.make_auth_token(customer_found.id) or {
 		ctx.set_status(422, '')
 		error := 'Failed to create customer. ${err.msg()}'
 		return ctx.html(templates.form_error(error))
@@ -59,17 +58,7 @@ fn (mut ctx App) handle_signin() vweb.Result {
 		return ctx.html(templates.form_error(error))
 	}
 
-	ctx.set_cookie(
-		name: 'Token'
-		value: token
-		expires: time.now().add_days(7)
-		max_age: 0
-		path: '/'
-		domain: ctx.req.host
-		secure: true
-		http_only: true
-		same_site: .same_site_none_mode
-	)
+	ctx.set_auth_token(token)
 
 	return ctx.ok('')
 }
@@ -94,11 +83,13 @@ fn (mut ctx App) handle_signup() vweb.Result {
 		return ctx.html(templates.form_error(error))
 	}
 
-	token := ctx.make_token(sub: user_data.id) or {
+	token := ctx.make_auth_token(user_data.id) or {
 		ctx.set_status(422, '')
 		error := 'Failed to create customer. ${err.msg()}'
 		return ctx.html(templates.form_error(error))
 	}
+
+	ctx.set_auth_token(token)
 
 	ctx.header.add_custom('HX-Redirect', '/') or {
 		ctx.set_status(500, '')
@@ -106,17 +97,32 @@ fn (mut ctx App) handle_signup() vweb.Result {
 		return ctx.html(templates.form_error(error))
 	}
 
-	ctx.set_cookie(
-		name: 'Token'
-		value: token
-		expires: time.now().add_days(7)
-		max_age: 0
-		path: '/'
-		domain: ctx.req.host
-		secure: true
-		http_only: true
-		same_site: .same_site_none_mode
-	)
+	return ctx.ok('')
+}
+
+['/api/auth/signout'; post]
+fn (mut ctx App) handle_signout() vweb.Result {
+	ctx.nullify_auth_token()
+
+	ctx.header.add_custom('HX-Redirect', '/') or {
+		ctx.set_status(500, '')
+		ctx.text('Unkown error')
+	}
 
 	return ctx.ok('')
+}
+
+['/api/auth/me'; get]
+fn (mut ctx App) handle_get_current_user_info() vweb.Result {
+	if !ctx.user_signed_in {
+		ctx.set_status(401, 'Unauthorized')
+		return ctx.text('')
+	}
+
+	return ctx.json(AuthResponseDto{
+		id: ctx.current_user.id
+		name: ctx.current_user.name
+		email: ctx.current_user.email
+		access_token: 'something'
+	})
 }

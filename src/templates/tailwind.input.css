@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 .htmx-request {
-	display: block;
+    display: block;
 }
