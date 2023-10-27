@@ -6,7 +6,8 @@
         <a class="link link-hover" href="/signin">Sign In</a>
         <a class="link link-hover" href="/signup">Sign Up</a>
     </div>
-    @else @ctx.current_user.name
+	@else
+    <span>@ctx.current_user.name</span>
     <div class="dropdown dropdown-end">
         <button class="btn btn-ghost btn-sm rounded-btn">
             <i data-lucide="chevron-down"></i>
