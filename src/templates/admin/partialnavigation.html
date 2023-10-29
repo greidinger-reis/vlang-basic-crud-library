@@ -1,0 +1,32 @@
+<div
+    id="table_navigation"
+    class="w-full flex gap-2 items-center justify-center p-4"
+>
+    @for i in 0 .. int(page_count) 
+		@if i + 1 == current_page
+		<a
+			href="/admin/books?page=${i + 1}"
+			hx-get="/admin/books/partial?page=${i + 1}"
+			hx-select="#table_body"
+			hx-push-url="/admin/books?page=${i + 1}"
+			hx-target="#table_body"
+			hx-swap="outerHTML"
+			class="btn btn-sm btn-primary"
+		>
+			${i + 1}
+		</a>
+		@else
+		<a
+			href="/admin/books?page=${i + 1}"
+			hx-get="/admin/books/partial?page=${i + 1}"
+			hx-push-url="/admin/books?page=${i + 1}"
+			hx-select="#table_body"
+			hx-target="#table_body"
+			hx-swap="outerHTML"
+			class="btn btn-sm"
+		>
+			${i + 1}
+		</a>
+		@end 
+	@end
+</div>

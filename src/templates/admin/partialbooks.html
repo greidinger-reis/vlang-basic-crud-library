@@ -1,0 +1,30 @@
+<tbody
+    id="table_body"
+    class="text-gray-600 text-sm font-light"
+    hx-get="/admin/books/partial/navigation"
+    hx-headers='{"current_page": @current_page, "page_count": @page_count}'
+    hx-trigger="load"
+    hx-target="#table_navigation"
+    hx-swap="outerHTML"
+>
+    @for book in book_list
+    <tr class="border-b border-base-200 hover:bg-base-200 font-medium">
+        <td class="py-3 px-6 text-left">
+            <img
+                src="/api/books/@book.id/cover"
+                alt="@book.title"
+                class="w-10 h-10 rounded-md"
+            />
+        </td>
+        <td class="py-3 px-6 text-left">@book.title</td>
+        <td class="py-3 px-6 text-left">@book.author</td>
+        <td class="py-3 px-6 text-left">@book.price</td>
+        <td class="py-3 px-6 text-left">@book.stock</td>
+        <td class="py-3 px-6 text-left">
+            <button class="hover:text-base-content/30 transition-colors">
+                <i data-lucide="more-vertical"></i>
+            </button>
+        </td>
+    </tr>
+    @end
+</tbody>
