@@ -1,0 +1,69 @@
+<aside class="w-64 bg-base-200 min-h-screen">
+    <ul class="menu bg-base-200 w-56 rounded-box">
+        <li class="flex gap-1">
+            @if location == '/'
+            <a href="/admin" class="active">
+                <i data-lucide="home"></i>
+                Overview
+            </a>
+            @else
+            <a href="/admin">
+                <i data-lucide="home"></i>
+                Overview
+            </a>
+            @end
+        </li>
+        <li>
+            @if location == '/books'
+            <a href="/admin/books" class="active">
+                <i data-lucide="library-big"></i>
+                Books
+            </a>
+            @else
+            <a href="/admin/books">
+                <i data-lucide="library-big"></i>
+                Books
+            </a>
+            @end
+        </li>
+        <li>
+            @if location == '/customers'
+            <a href="/admin/customers">
+                <i data-lucide="users"></i>
+                Customers
+            </a>
+            @else
+            <a href="/admin/customers">
+                <i data-lucide="users"></i>
+                Customers
+            </a>
+            @end
+        </li>
+        <li>
+            @if location == '/orders'
+            <a href="/admin/orders" class="active">
+                <i data-lucide="list-ordered"></i>
+                Orders
+            </a>
+            @else
+            <a href="/admin/orders">
+                <i data-lucide="list-ordered"></i>
+                Orders
+            </a>
+            @end
+        </li>
+        <li>
+            @if location == '/settings'
+            <a href="/admin/settings" class="active">
+                <i data-lucide="sliders"></i>
+                Settings
+            </a>
+            @else
+            <a href="/admin/settings">
+                <i data-lucide="sliders"></i>
+                Settings
+            </a>
+            @end
+        </li>
+    </ul>
+</aside>

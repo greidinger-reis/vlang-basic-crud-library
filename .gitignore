@@ -25,5 +25,7 @@ bin/
 *.sqlite
 
 #static images
-
 src/assets/covers/*
+
+#generated tailwindcss
+src/assets/styles.css

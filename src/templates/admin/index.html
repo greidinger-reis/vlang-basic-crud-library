@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+    @include '../layout/head.html'
+    <body>
+        @include '../layout/header.html'
+        <main class="flex">
+            <div
+                hx-get="/admin/sidemenu"
+                hx-trigger="load"
+                hx-swap="outerHTML"
+                hx-headers='{"Location":"/"}'
+            ></div>
+            <div>Admin overview</div>
+        </main>
+    </body>
+</html>
