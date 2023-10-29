@@ -1,12 +1,23 @@
 module main
 
 import vweb
+import math
 
 ['/admin/books'; get]
 pub fn (mut ctx App) admin_books() vweb.Result {
 	page_title := 'Admin Book Page'
-	book_list := ctx.book_find_all()
+	mut current_page := ctx.query['page'].int()
+	if current_page == 0 {
+		current_page = 1
+	}
+
+	limit := current_page * 10
+	offset := (current_page - 1) * 10
+
+	book_list, book_full_len := ctx.book_find_all(limit, offset)
 	csrf_token := ctx.get_csrf_token()
+
+	book_pagination_number := math.ceil(f64(book_full_len) / 10.0)
 
 	return $vweb.html()
 }

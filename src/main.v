@@ -34,7 +34,7 @@ fn main() {
 ['/'; get]
 pub fn (mut ctx App) index() vweb.Result {
 	page_title := 'Book store'
-	book_list := ctx.book_find_all()
+	book_list, _ := ctx.book_find_all(100, 0)
 	csrf_token := ctx.get_csrf_token()
 
 	return $vweb.html()

@@ -3,11 +3,16 @@ module main
 import os
 import net.http
 
-pub fn (mut ctx App) book_find_all() []Book {
+pub fn (mut ctx App) book_find_all(limit int, offset int) ([]Book, int) {
+	book_full_len := sql ctx.db {
+		select count from Book
+	} or { 0 }
+
 	book_list := sql ctx.db {
-		select from Book
-	} or { return [] }
-	return book_list
+		select from Book limit limit offset offset
+	} or { [] }
+
+	return book_list, book_full_len
 }
 
 fn (mut ctx App) book_create(book &Book, book_cover http.FileData) !&Book {

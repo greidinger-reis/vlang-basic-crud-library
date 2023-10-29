@@ -17,12 +17,6 @@ pub fn (mut ctx App) handle_book_get_one(id string) vweb.Result {
 	return ctx.json(book)
 }
 
-['/api/books'; get]
-pub fn (mut ctx App) handle_book_get_all() vweb.Result {
-	book_list := ctx.book_find_all()
-	return ctx.json(book_list)
-}
-
 // TODO: Protect this route with authentication (admin only)
 ['/api/books'; post]
 pub fn (mut ctx App) handle_book_create() vweb.Result {
